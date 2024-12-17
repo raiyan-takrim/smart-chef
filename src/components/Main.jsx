@@ -1,5 +1,5 @@
 "use client"
-import { useState, Suspense } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AddIngredientForm } from "./AddIngredientForm";
 import { IngredientList } from "./IngredientList";
 import ReactMarkdown from 'react-markdown'
@@ -10,6 +10,7 @@ export const Main = () => {
   const [ingredientList, setingredientList] = useState([]);
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(false);
+  const recipeRef = useRef(null);
 
   const addIngredient = (formData) => {
     const ingredient = formData.get("ingredient");
@@ -21,27 +22,29 @@ export const Main = () => {
     const recipeMarkdown = await getRecipeFromMistral(ingredientList);
     setRecipe(recipeMarkdown);
     setLoading(false);
+    // Scroll to the recipe component
   }
+
+  useEffect(() => {
+    if (recipe) {
+      recipeRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [recipe]);
 
   return (
     <main className="px-4 py-10 max-w-xl mx-auto">
-      <div className="my-10 text-center">
-        <h2 className="text-xl font-semibold">Add available ingredients...</h2>
-        <p className="text-black/60 text-sm leading-loose my-2">Smart Chef will provide you an amazing recipe using those ingredients!</p>
-      </div>
+
       <AddIngredientForm addIngredient={addIngredient} />
       {ingredientList.length > 0 && (
         <>
           <IngredientList ingredientList={ingredientList} />
           <CTA ingredientList={ingredientList} getRecipe={getRecipe} loading={loading} />
-          <Suspense fallback={<div>Loading recipe...</div>}>
-            {recipe && (
-              <div className="tracking-wide leading-relaxed px-4 py-10 mt-10 bg-orange-100 border-2 rounded-lg border-orange-200" aria-live="polite">
-                <h1 className="text-xl font-bold mb-4">Generated Recipe: </h1>
-                <ReactMarkdown>{recipe}</ReactMarkdown>
-              </div>
-            )}
-          </Suspense>
+          {recipe && (
+            <div ref={recipeRef} className="tracking-wide leading-relaxed px-4 py-10 mt-10 bg-orange-100 border-2 rounded-lg border-orange-200" aria-live="polite">
+              <h1 className="text-xl font-bold mb-4">Generated Recipe: </h1>
+              <ReactMarkdown>{recipe}</ReactMarkdown>
+            </div>
+          )}
         </>
       )}
     </main>

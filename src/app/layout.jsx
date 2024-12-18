@@ -7,8 +7,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Smart Chef",
-  description: "Smart Chef is an AI generated recipe maker web app",
+  title: "Smart Chef - AI-Powered Recipe Generator",
+  description: "Discover delicious recipes tailored to the ingredients you have at home with Smart Chef. Powered by AI, our web app provides easy-to-follow recipes, to make cooking simple and fun!",
 };
 
 export default function RootLayout({ children }) {
